@@ -4,20 +4,14 @@ import fr.btn.dtos.ClientDto;
 import fr.btn.dtos.MailClient;
 import fr.btn.dtos.MailDto;
 import fr.btn.dtos.MailSent;
-import fr.btn.entities.ClientEntity;
-import fr.btn.entities.MailEntity;
-import fr.btn.repositories.ClientRepository;
-import fr.btn.repositories.MailRepository;
-import fr.btn.security.Secured;
+import fr.btn.hateos.HateOs;
 import fr.btn.services.ApiKeyService;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.Mailer;
-import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.*;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -43,7 +37,6 @@ public class MailResource {
     @Transactional
     @Consumes(MediaType.APPLICATION_JSON)
     public Response send(@HeaderParam("x-api-key") String apikey, MailSent mailSent) throws URISyntaxException {
-        System.out.println("in mail service=" + apikey);
         //Check if mail is not null
         if(mailSent == null)
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -51,18 +44,29 @@ public class MailResource {
         //Check if api key is valid
         ClientDto clientDto = apiKeyService.getClientByApiKey(apikey);
 
-        if(clientDto == null)
+
+
+        if(clientDto == null) {
+            HateOs hateOs = new HateOs();
+            hateOs.addLink("Register", HttpMethod.POST, new URI("http://localhost:8082/clients"));
+
             return Response
+                    .ok(hateOs.getLinks())
                     .status(Response.Status.NOT_FOUND)
-                    .contentLocation(new URI("http://localhost:8085/api/register"))
                     .build();
+        }
+
 
         //Check if mail count < quota
-        if(!isMailCountValid(apikey, clientDto))
+        if(!isMailCountValid(apikey, clientDto)) {
+            HateOs hateOs = new HateOs();
+            hateOs.addLink("Augment Quota", HttpMethod.PUT, new URI("http://localhost:8082/clients/new_quota"));
             return Response
                     .status(Response.Status.NOT_ACCEPTABLE)
-                    .contentLocation(new URI("http://localhost:8085/api/augment_quota"))
                     .build();
+
+        }
+
 
         MailClient mailClient = MailClient
                 .builder()

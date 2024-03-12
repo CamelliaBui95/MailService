@@ -18,7 +18,7 @@ public interface ApiKeyService {
     ClientDto getClientByApiKey(@PathParam("apiKey") String apiKey);
 
     @GET
-    @Path("/mailCount/{apiKey}")
+    @Path("/mail_count/{apiKey}")
     int getMailCount(@PathParam("apiKey") String apiKey);
 
     @POST
