@@ -7,7 +7,7 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.jvm -t quarkus/mailapi-jvm .
+# docker build -f src/main/docker/Dockerfile.jvm -t camelliabui/mail-api .
 #
 # Then run the container using:
 #

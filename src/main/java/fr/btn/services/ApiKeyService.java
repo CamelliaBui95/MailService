@@ -8,6 +8,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @RegisterRestClient(configKey = "apiKey-service")
@@ -18,11 +19,11 @@ public interface ApiKeyService {
     ClientDto getClientByApiKey(@PathParam("apiKey") String apiKey);
 
     @GET
-    @Path("/mail_count/{apiKey}")
-    int getMailCount(@PathParam("apiKey") String apiKey);
+    @Path("/{apiKey}/mail_count")
+    int getMailCountByMonth(@PathParam("apiKey") String apiKey);
 
     @POST
     @Transactional
     @Path("{apiKey}")
-    MailDto saveMail(@PathParam("apiKey") String apiKey, MailClient mailClient);
+    Response saveMail(@PathParam("apiKey") String apiKey, MailClient mailClient);
 }

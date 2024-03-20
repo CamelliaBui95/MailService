@@ -2,7 +2,6 @@ package fr.btn.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.btn.entities.MailEntity;
 import lombok.*;
 
 import java.time.LocalDate;

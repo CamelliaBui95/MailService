@@ -15,13 +15,10 @@ import java.time.LocalTime;
 @Builder
 public class MailClient {
     @JsonProperty(index = 1)
-    private String subject;
-    @JsonProperty(index = 2)
-    private String content;
-    @JsonProperty(index = 3)
     private String recipient;
-    @JsonProperty(index = 4)
-    private LocalDate date;
-    @JsonProperty(index = 5)
-    private LocalTime time;
+    @JsonProperty(index = 2)
+    private String subject;
+    @JsonProperty(index = 3)
+    private String content;
+
 }
