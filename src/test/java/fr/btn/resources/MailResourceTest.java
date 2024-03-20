@@ -1,8 +1,10 @@
 package fr.btn.resources;
 
-import fr.btn.dtos.MailSent;
+import fr.btn.WiremockApiKeyService;
+import fr.btn.dtos.MailClient;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.MockMailbox;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,9 +18,12 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
 @QuarkusTest
+@QuarkusTestResource(WiremockApiKeyService.class)
 public class MailResourceTest {
     private static final String TO = "foo@quarkus.io";
     private static final String API_KEY = "TEwLHA9MSRYWG5EO";
+
+    private static MailClient testMail;
 
     @Inject
     MockMailbox mailbox;
@@ -26,16 +31,17 @@ public class MailResourceTest {
     @BeforeEach
     void init() {
         mailbox.clear();
-    }
 
-    @Test
-    void testTextMailWithValidApiKey() {
-        MailSent testMail = MailSent
+        testMail = MailClient
                 .builder()
                 .recipient(TO)
                 .subject("TEST SUBJECT")
                 .content("TEST CONTENT")
                 .build();
+    }
+
+    @Test
+    void testTextMailWithValidApiKey() {
 
         given()
                 .contentType("application/json")
@@ -57,12 +63,6 @@ public class MailResourceTest {
 
     @Test
     void testTextMailWithInvalidApiKey() {
-        MailSent testMail = MailSent
-                .builder()
-                .recipient(TO)
-                .subject("TEST SUBJECT")
-                .content("TEST CONTENT")
-                .build();
 
         given()
                 .contentType("application/json")
@@ -76,12 +76,6 @@ public class MailResourceTest {
 
     @Test
     void testTextMailWithNoApiKey() {
-        MailSent testMail = MailSent
-                .builder()
-                .recipient(TO)
-                .subject("TEST SUBJECT")
-                .content("TEST CONTENT")
-                .build();
 
         given()
                 .contentType("application/json")
@@ -93,3 +87,9 @@ public class MailResourceTest {
     }
 
 }
+
+//    This module provides the io.quarkus.test.security.
+//    TestSecurity annotation to control the security context the test is run with.
+//    Basically, you can either bypass authorization so tests can access secured endpoints without needing to be authenticated,
+//    and/or you can specify the user and roles you want the tests to use.
+

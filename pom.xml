@@ -100,6 +100,14 @@
             <artifactId>quarkus-junit5-mockito</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.wiremock/wiremock -->
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock</artifactId>
+            <version>3.4.2</version>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
     <build>

@@ -27,3 +27,5 @@ public interface ApiKeyService {
     @Path("{apiKey}")
     Response saveMail(@PathParam("apiKey") String apiKey, MailClient mailClient);
 }
+
+//(configKey = "apiKey-service")
