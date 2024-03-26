@@ -7,6 +7,7 @@ import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,12 +17,14 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
 
 @QuarkusTest
 @QuarkusTestResource(WiremockApiKeyService.class)
 public class MailResourceTest {
     private static final String TO = "foo@quarkus.io";
-    private static final String API_KEY = "TEwLHA9MSRYWG5EO";
+    private static final String API_KEY = "TEST_KEY";
+    private static final String API_KEY_2 = "TEST_KEY_2";
 
     private static MailClient testMail;
 
@@ -66,7 +69,7 @@ public class MailResourceTest {
 
         given()
                 .contentType("application/json")
-                .header("x-api-key", "zzz")
+                .header("x-api-key", "FALSE_KEY")
                 .body(testMail)
                 .when()
                 .post("/mail")
@@ -84,6 +87,20 @@ public class MailResourceTest {
                 .post("/mail")
                 .then()
                 .statusCode(400);
+    }
+
+    @Test
+    void testSendMailWithAReachedQuota() {
+        given()
+                .contentType("application/json")
+                .header("x-api-key", API_KEY_2)
+                .body(testMail)
+                .when()
+                .post("/mail")
+                .then()
+                .contentType("text/plain")
+                .statusCode(406)
+                .body(is("Quota has been reached."));
     }
 
 }

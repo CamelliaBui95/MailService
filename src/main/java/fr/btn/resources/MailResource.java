@@ -10,8 +10,11 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
+import org.apache.http.entity.ContentType;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+
+import javax.swing.text.AbstractDocument;
 
 
 @Path("/mail")
@@ -35,18 +38,24 @@ public class MailResource {
             return Response.status(Response.Status.BAD_REQUEST).build();
 
         //Check if api key is valid
-        ClientDto clientDto = apiKeyService.getClientByApiKey(apikey);
+        Response res = apiKeyService.getClientByApiKey(apikey);
 
-        if(clientDto == null)
+        if(res.getStatus() != 200)
+            return res;
+
+        ClientDto clientDto = res.readEntity(ClientDto.class);
+
+        /*if(clientDto == null)
             return Response
                     .ok("Client Not Found.")
                     .status(Response.Status.NOT_FOUND)
-                    .build();
+                    .build();*/
 
         //Check if mail count < quota
         if(!isMailCountValid(apikey, clientDto))
             return Response
                     .ok("Quota has been reached.")
+                    .type("text/plain")
                     .status(Response.Status.NOT_ACCEPTABLE)
                     .build();
 
@@ -62,13 +71,14 @@ public class MailResource {
             return Response.ok("Cannot send mail.").status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
-// validator de mail
-// messages personalisés
+
     private boolean isMailCountValid(String apiKey, ClientDto client) {
         if(client.getQuota() == 0)
             return true;
 
-        int mailCount = apiKeyService.getMailCountByMonth(apiKey);
+        Response res = apiKeyService.getMailCountByMonth(apiKey);
+
+        int mailCount = res.readEntity(Integer.class);
 
         return mailCount < client.getQuota();
     }

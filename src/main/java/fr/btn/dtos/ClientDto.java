@@ -1,8 +1,11 @@
 package fr.btn.dtos;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-import lombok.Data;
-
-@Data
+@Setter
+@Getter
+@Builder
 public class ClientDto {
     private int quota;
     private String status;
